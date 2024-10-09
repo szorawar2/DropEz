@@ -1,0 +1,39 @@
+/* TextInput.module.css */
+.textInputContainer {
+  margin: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.inputForm {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 600px; /* Set a max-width for the input area */
+}
+
+.textArea {
+  width: 100%;
+  height: 50px; /* Shorten height for a cleaner look */
+  padding: 10px;
+  border: 1px solid var(--text-color);
+  border-radius: 25px; /* Round corners */
+  resize: none; /* Prevent resizing */
+  outline: none; /* Remove outline on focus */
+  margin-right: 10px; /* Space between textarea and button */
+  font-size: 16px; /* Font size adjustment */
+}
+
+.sendBtn {
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 25px; /* Round button */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.sendBtn:hover {
+  background-color: #45c0a0; /* Darker shade on hover */
+}

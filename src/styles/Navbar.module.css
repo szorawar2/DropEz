@@ -1,0 +1,51 @@
+/* Navbar.module.css */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* padding: 10px 20px; */
+  background-color: var(--primary-color);
+}
+
+.logo {
+  font-size: 24px;
+  margin: 0px;
+  padding: 20px;
+  color: var(--head-text-color);
+}
+
+.navLinks {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  /* gap: 20px; */
+}
+
+.navLinks {
+  margin: 0px;
+  padding: 20px;
+}
+
+.navLinks li {
+  padding: 0px 10px;
+  margin: 0px;
+}
+
+.navLinks li:hover {
+  background-color: var(--secondary-color);
+}
+
+.navLinks a {
+  margin: 0px;
+  color: var(--head-text-color);
+  text-decoration: none;
+}
+
+.loginBtn {
+  background-color: var(--secondary-color);
+  border: none;
+  font-family: "Roboto mono";
+  color: var(--head-text-color);
+  padding: 10px 15px;
+  cursor: pointer;
+}
