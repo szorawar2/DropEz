@@ -1,1 +1,1 @@
-Not yet up and ruunning
+Not yet up and running
