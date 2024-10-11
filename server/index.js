@@ -4,9 +4,14 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import cors from "cors";
 import bodyParser from "body-parser";
+import fs from "fs";
 import multer from "multer";
+import path from "path";
+import busboy from "busboy";
 
 import pool from "./db.js";
+
+const uploadPath = "../uploads/";
 
 const app = express();
 const PORT = 5000;
@@ -15,6 +20,91 @@ const SECRET_KEY = "your_jwt_secret_key"; // Keep this secure and hidden in env 
 // Middleware
 app.use(cors()); // Allow React to communicate with Node
 app.use(bodyParser.json()); // Parse incoming JSON requests
+// Middleware to parse URL-encoded data (text fields in form)
+app.use(express.urlencoded({ extended: true }));
+
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     // Define the directory where files will be saved
+//     cb(null, uploadPath); // Make sure this directory exists
+//   },
+//   filename: (req, file, cb) => {
+//     //cb(null, file.originalname); // Use the original file name
+//     console.log(req.body);
+//     console.log(file);
+//     const userId = req.body.user_id; // Get user_id from request
+//     const messageIndex = req.body.message_index; // Get message index from request
+//     const fileExt = path.extname(file.originalname); // Get file extension
+//     const newFileName = `${userId}_${messageIndex}${fileExt}`; // Create new file name
+//     cb(null, newFileName); // Save file as userId_messageIndex.extension
+//   },
+// });
+
+// const upload = multer({ storage: storage }).single("file");
+
+// Handle file upload
+// app.post("/upload", upload, (req, res) => {
+//   console.log(req.body);
+//   // Set up the storage configuration for multer
+
+//   // Initialize multer with the storage configuration
+
+//   // upload(req, res, (err) => {
+//   //   if (err) {
+//   //     console.log(err);
+//   //     return res.end("Error uploading file.");
+//   //   }
+//   //   res.end("File has been uploaded");
+//   // });
+//   if (req.file) {
+//     //console.log("File uploaded successfully:", req.file);
+//     console.
+//     (req.body);
+//     res.json({ message: "File uploaded successfully", file: req.file });
+//   } else {
+//     res.status(400).json({ message: "File upload failed" });
+//   }
+// });
+
+let userId;
+let messageIndex;
+
+app.post("/upload_id", (req, res) => {
+  console.log(req.body);
+  userId = req.body.userID;
+  messageIndex = req.body.message_index;
+  res.status(200).json({ message: "upload_id updated" });
+});
+
+app.post("/upload", (req, res) => {
+  const bb = busboy({ headers: req.headers });
+
+  // bb.on("field", (fieldname, val) => {
+  //   // Capture userId and messageIndex
+  //   if (fieldname === "userID") {
+  //     userId = val;
+  //   } else if (fieldname === "message_index") {
+  //     messageIndex = val;
+  //   }
+  // });
+
+  bb.on("file", (fieldname, file, filename, encoding, mimetype) => {
+    console.log("Uploading:", filename);
+    const uploadPath = path.join(
+      "..",
+      "uploads",
+      `${userId}_${messageIndex}_${filename.filename}`
+    );
+    const writeStream = fs.createWriteStream(uploadPath);
+    file.pipe(writeStream);
+  });
+
+  bb.on("finish", () => {
+    res.status(200).json({ message: "Upload complete" });
+  });
+
+  return req.pipe(bb);
+});
 
 // Dummy user (in a real app, you'd query a database)
 const users = [
@@ -75,31 +165,6 @@ app.post("/login", async (req, res) => {
     // Generate JWT token
     const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
 
-    // const messages = await pool.query(
-    //   "SELCT * FROM userdata WHERE user_id = $1",
-    //   [user.id]
-    // );
-
-    // let messagesArr = [];
-    // messages.rows.forEach((row, index) => {
-    //   const messageObj = {
-    //     text: row.item_message,
-    //     fileItem: {
-    //       fileName: row.item_filename,
-    //       url: "https://www.google.ca/",
-    //     },
-    //   };
-    //   messagesArr.push(messageObj);
-    // });
-
-    // // Send success response
-    // res.json({
-    //   status: "Login successful",
-    //   messagesData: messagesArr,
-    //   id: user.id,
-    //   token,
-    // });
-
     try {
       const messages = await pool.query(
         "SELECT * FROM userdata WHERE user_id = $1",
@@ -135,33 +200,6 @@ app.post("/login", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
-// Login route
-// app.post("/login", (req, res) => {
-//   const { username, password } = req.body;
-//   const user = users.find((u) => u.username === username);
-
-//   if (user && bcrypt.compareSync(password, user.password)) {
-//     // Generate JWT token
-//     const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
-//     return res.json({ token });
-//   }
-
-//   res.status(401).json({ message: "Invalid credentials" });
-// });
-
-// // Token verification middleware
-// function verifyToken(req, res, next) {
-//   const token = req.headers["authorization"];
-//   if (!token) return res.status(403).json({ message: "No token provided" });
-
-//   jwt.verify(token.split(" ")[1], SECRET_KEY, (err, decoded) => {
-//     if (err)
-//       return res.status(500).json({ message: "Failed to authenticate token" });
-//     req.user = decoded;
-//     next();
-//   });
-// }
 
 function verifyToken(req, res, next) {
   const token = req.headers["authorization"];
