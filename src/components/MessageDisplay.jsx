@@ -1,9 +1,32 @@
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import styles from "../styles/MessageDisplay.module.css";
 import { Context } from "../Context";
+import axios from "axios";
 
 function MessageDisplay() {
-  const { messages } = useContext(Context);
+  const { messages, currentUser } = useContext(Context);
+
+  const handleDownload = async (user, index, fileName) => {
+    try {
+      const response = await axios.get("http://localhost:5000/load_file", {
+        params: {
+          userID: user,
+          message_index: index,
+          fileName: fileName,
+        },
+        responseType: "blob", // Ensures binary data is handled correctly
+      });
+
+      const fileURL = URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = fileURL;
+      link.download = fileName;
+      link.click();
+      URL.revokeObjectURL(fileURL); // Clean up the object URL
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
 
   return (
     <div className={styles.messageDisplayContainer}>
@@ -14,13 +37,18 @@ function MessageDisplay() {
           <div key={index} className={styles.message}>
             {messageObj.text && <p>{messageObj.text}</p>}
             {messageObj.fileItem.fileName && (
-              <a
-                href={messageObj.fileItem.url}
-                download={messageObj.fileItem.fileName}
-                className={styles.downloadLink}
+              <button
+                className={styles.downloadButton}
+                onClick={() =>
+                  handleDownload(
+                    currentUser,
+                    index,
+                    messageObj.fileItem.fileName
+                  )
+                }
               >
-                {messageObj.fileItem.fileName}
-              </a>
+                Download {messageObj.fileItem.fileName}
+              </button>
             )}
           </div>
         ))

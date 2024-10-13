@@ -48,8 +48,8 @@ function TextInput() {
         var fileToSend = fileInputRef.current.files[0];
         const formData = new FormData();
         formData.append("file", fileInputRef.current.files[0]);
-        formData.append("userID", currentUser);
-        formData.append("message_index", messages.length); // Send message index
+        // formData.append("userID", currentUser);
+        // formData.append("message_index", messages.length); // Send message index
 
         try {
           const result = await axios.post(
@@ -64,6 +64,27 @@ function TextInput() {
           console.error(error);
         }
       }
+
+      // //Load file
+      // try {
+      //   const response = await axios.get(`http://localhost:5000/load_file`, {
+      //     params: {
+      //       userID: 1,
+      //       message_index: 1,
+      //       fileName: "upload test.txt",
+      //     },
+      //     responseType: "blob", // If the file is a blob (e.g., image, text, etc.)
+      //   });
+
+      //   // If it's a file, create an object URL and set it to the state
+      //   const fileURL = URL.createObjectURL(new Blob([response.data]));
+
+      //   // You can now display the file in the frontend (e.g., set the src of an img or a link to download)
+      //   console.log("File URL:", fileURL);
+      //   //return fileURL;
+      // } catch (error) {
+      //   console.error("Error fetching file:", error);
+      // }
 
       setMessages([...messages, { text: note, fileItem: currentFile }]); // Add message and files
       try {

@@ -66,6 +66,23 @@ app.use(express.urlencoded({ extended: true }));
 //   }
 // });
 
+app.get("/load_file", (req, res) => {
+  // const fileName = req.params.fileName;
+  // const userID = req.params.userID;
+  // const message_index = req.params.message_index;
+  const { userID, message_index, fileName } = req.query;
+  const fileDetail = `${userID}_${message_index}_${fileName}`;
+  const filePath = path.resolve("../uploads", fileDetail);
+
+  console.log(filePath);
+
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.status(404).json({ error: "File not found" });
+    }
+  });
+});
+
 let userId;
 let messageIndex;
 
