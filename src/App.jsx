@@ -1,15 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 
 import styles from "./styles/App.module.css";
 import Navbar from "./components/Navbar";
 import TextInput from "./components/TextInput";
 import Login from "./components/Login";
+import Signup from "./components/signup";
 import MessageDisplay from "./components/MessageDisplay";
-import FileUpload from "./components/FileUpload";
+//import FileUpload from "./components/FileUpload";
+import { Context } from "./Context";
 
 function App() {
-  const [token, setToken] = useState("");
+  const { token, setToken, login, setLogin } = useContext(Context);
+
   const [isLoading, setIsLoading] = useState(true); // To show a loading state
 
   // Check if token exists when the app loads
@@ -42,8 +45,10 @@ function App() {
           <MessageDisplay />
           <TextInput />
         </>
+      ) : login ? (
+        <Login />
       ) : (
-        <Login setToken={setToken} />
+        <Signup />
       )}
     </div>
   );

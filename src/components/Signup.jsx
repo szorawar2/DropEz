@@ -3,7 +3,7 @@ import React, { useState, useContext } from "react";
 import axios from "axios";
 import { Context } from "../Context";
 
-function Login() {
+function Signup() {
   const {
     token,
     setToken,
@@ -16,7 +16,9 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async (e) => {
+  const [err, setErr] = useState(0);
+
+  const handleSignup = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post("http://localhost:5000/login", {
@@ -35,8 +37,8 @@ function Login() {
 
   return (
     <div>
-      <h1>Login</h1>
-      <form onSubmit={handleLogin}>
+      <h1>Signup</h1>
+      <form onSubmit={handleSignup}>
         <input
           type="text"
           placeholder="Username"
@@ -49,19 +51,19 @@ function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Login</button>
+        <button type="submit">Signup</button>
         <button
           onClick={() => {
-            setLogin(false);
+            setLogin(true);
           }}
           type="button"
         >
           {" "}
-          Signup instead?
+          Login instead?
         </button>
       </form>
     </div>
   );
 }
 
-export default Login;
+export default Signup;
