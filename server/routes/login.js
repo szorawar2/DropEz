@@ -10,6 +10,8 @@ const SECRET_KEY = "your_secret_key"; // Define your secret key here
 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
+  let user;
+  let token;
 
   try {
     // Query the database to find the user by ID
@@ -22,7 +24,7 @@ router.post("/login", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const user = result.rows[0];
+    user = result.rows[0];
 
     // Compare the provided password with the stored hashed password
     // const passwordMatch = bcrypt.compareSync(password, user.password);
@@ -35,41 +37,41 @@ router.post("/login", async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
-
-    try {
-      const messages = await pool.query(
-        "SELECT * FROM userdata WHERE user_id = $1",
-        [user.id]
-      );
-
-      let messagesArr = [];
-      messages.rows.forEach((row, index) => {
-        const messageObj = {
-          text: row.item_message,
-          fileItem: {
-            fileName: row.item_filename,
-            url: "https://www.google.ca/",
-          },
-        };
-        messagesArr.push(messageObj);
-      });
-
-      // Send success response
-      res.json({
-        status: "Login successful",
-        messagesData: messagesArr,
-        id: user.id,
-        token,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
 
     // return res.json({ token });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
+  }
+
+  try {
+    const messages = await pool.query(
+      "SELECT * FROM userdata WHERE user_id = $1",
+      [user.id]
+    );
+
+    let messagesArr = [];
+    messages.rows.forEach((row, index) => {
+      const messageObj = {
+        text: row.item_message,
+        fileItem: {
+          fileName: row.item_filename,
+          fileId: row.item_fileid,
+        },
+      };
+      messagesArr.push(messageObj);
+    });
+
+    // Send success response
+    res.json({
+      status: "Login successful",
+      messagesData: messagesArr,
+      id: user.id,
+      token,
+    });
+  } catch (error) {
+    console.log(error);
   }
 });
 

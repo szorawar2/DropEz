@@ -17,27 +17,38 @@ function Signup() {
   const [password, setPassword] = useState("");
 
   const [err, setErr] = useState(0);
+  const [status, setStatus] = useState("");
 
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/login", {
+      const response = await axios.post("http://localhost:5000/signup", {
         username,
         password,
       });
-      setToken(response.data.token); // Pass the token to the parent component
-      //console.log(response.data);
-      console.log("Login succesful");
+      setErr(response.data.error);
+      setStatus(response.data.message);
+      console.log(status);
+      if (response.data.token) {
+        setToken(response.data.token);
+      }
       setCurrentUser(response.data.id);
-      setMessages(response.data.messagesData);
+      console.log(response.data);
     } catch (error) {
-      console.log("Login failed");
+      console.log("Signup failed");
     }
   };
 
   return (
     <div>
       <h1>Signup</h1>
+      <div>
+        {err ? (
+          <p style={{ color: "var(--secondary-color)" }}>{status}</p>
+        ) : (
+          <></>
+        )}
+      </div>
       <form onSubmit={handleSignup}>
         <input
           type="text"

@@ -14,7 +14,7 @@ router.post("/updatemessages", async (req, res) => {
     );
     res.json({ message: "Insert complete" });
   } catch (error) {
-    console.error(err);
+    console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 });

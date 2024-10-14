@@ -8,6 +8,7 @@ import updMessRouter from "./routes/updatemessages.js";
 import uploadRouter from "./routes/upload.js";
 import loadFileRouter from "./routes/load_file.js";
 import miscRouter from "./routes/misc.js";
+import signupRouter from "./routes/signup.js";
 
 const uploadPath = "../uploads/";
 
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-enco
 
 app.use(
   loginRouter, // (/login)
+  signupRouter, // (/signup)
   updMessRouter, // (/updatemessages)
   uploadRouter, // (/upload, /upload_id)
   loadFileRouter, // (/load_file)
