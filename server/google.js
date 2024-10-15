@@ -2,19 +2,15 @@ import { google } from "googleapis";
 import path from "path";
 import fs from "fs";
 
-let ACCESS_TOKEN =
-  "ya29.a0AcM612x0Dcafj6IzULsSdZZCp9z3pyFGhS6x7BnwcrAgxa4japQcJiWeAISUtaFROZd9XGqtsTWjGwqU2Le3bKiyO9y7uuyY0j0KyYvXiEJI3wtPhC7TtK3q0BXs6ObtVnDLLOFgg_D-PXvwhKRcfHNAAq-dmd7w0Oe2tSjKiQaCgYKAQESARESFQHGX2MiLmjbgRbpX4JunlKKNxBDoA0177";
+import pool from "./db.js";
+
+let ACCESS_TOKEN = "";
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
   process.env.REDIRECT_URI
 );
-
-oauth2Client.setCredentials({
-  access_token: ACCESS_TOKEN,
-  refresh_token: process.env.REFRESH_TOKEN,
-});
 
 const drive = google.drive({
   version: "v3",
@@ -24,63 +20,119 @@ const drive = google.drive({
 const filePath = path.join("..", "uploads", "1_0_upload test.txt");
 
 // Helper function to refresh the access token if needed
-oauth2Client.on("tokens", (tokens) => {
+oauth2Client.on("tokens", async (tokens) => {
   if (tokens.access_token) {
     console.log("New Access Token:", tokens.access_token);
     ACCESS_TOKEN = tokens.access_token; // Store the new access token if required
+
+    try {
+      await pool.query("UPDATE accesstoken SET acc_token = $1 WHERE id = $2", [
+        ACCESS_TOKEN,
+        1,
+      ]);
+    } catch (error) {
+      console.log("Update failed:", error.message);
+    }
   }
 });
 
-async function uploadFile() {
+async function googleUploadFile(
+  fileStream,
+  userID,
+  messageIndex,
+  fileName,
+  mimeType
+) {
+  const dbResult = await pool.query(
+    "SELECT acc_token FROM accesstoken WHERE id = 1"
+  );
+  //console.log("current token:", dbResult.rows[0].acc_token);
+
+  ACCESS_TOKEN = dbResult.rows[0].acc_token;
+
+  oauth2Client.setCredentials({
+    access_token: ACCESS_TOKEN,
+    refresh_token: process.env.REFRESH_TOKEN,
+  });
+
   try {
     const response = await drive.files.create({
       requestBody: {
-        name: "upload_test_drive.txt",
-        mimeType: "text/plain",
+        name: `${userID}_${messageIndex}_${fileName}.txt`,
+        mimeType: mimeType,
       },
       media: {
-        mimeType: "text/plain",
-        body: fs.createReadStream(filePath),
+        mimeType: mimeType,
+        body: fileStream,
       },
     });
 
-    console.log(response.data);
+    console.log("Uploaded file details:", response.data);
+
+    //return file id for referencing in database
+    return response.data.id;
   } catch (error) {
     if (error.response && error.response.status === 401) {
       console.log("Access token expired, refreshing...");
       await oauth2Client.getAccessToken(); // Refresh the token if it expired
-      return uploadFile(); // Retry the upload
+      return googleUploadFile(); // Retry the upload
     } else {
       console.error("Upload Failed:", error.message);
     }
   }
 }
 
-async function downloadFile(fileId) {
-  const destPath = path.join("..", "downloads", "downloaded_file.txt");
+async function googleDownloadFile(fileId, res) {
+  // const destPath = path.join("..", "downloads", "downloaded_file.txt");
+
+  const dbResult = await pool.query(
+    "SELECT acc_token FROM accesstoken WHERE id = 1"
+  );
+
+  ACCESS_TOKEN = dbResult.rows[0].acc_token;
+
+  oauth2Client.setCredentials({
+    access_token: ACCESS_TOKEN,
+    refresh_token: process.env.REFRESH_TOKEN,
+  });
 
   try {
-    const dest = fs.createWriteStream(destPath); // Create write stream to destination file
+    //const dest = fs.createWriteStream(destPath); // Create write stream to destination file
 
     const response = await drive.files.get(
       { fileId: fileId, alt: "media" },
       { responseType: "stream" }
     );
 
+    // Set the response headers to prompt a download
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="downloaded_file.txt"`
+    ); // Change filename accordingly
+    res.setHeader("Content-Type", "application/octet-stream"); // Set the content type appropriately
+
     response.data
       .on("end", () => {
-        console.log(`Downloaded file to ${destPath}`);
+        console.log(`Downloaded complete`);
       })
       .on("error", (err) => {
         console.error("Error downloading file:", err);
       })
-      .pipe(dest); // Pipe the stream to the destination
+      .pipe(res); // Send the data directly to the client
   } catch (error) {
-    console.error("Failed to download file:", error.message);
+    if (error.response && error.response.status === 401) {
+      console.log("Access token expired, refreshing...");
+      await oauth2Client.getAccessToken(); // Refresh the token if it expired
+      return googleUploadFile(); // Retry the upload
+    } else {
+      console.error("Upload Failed:", error.message);
+    }
   }
 }
 
 //uploadFile();
 
-const FILE_ID = "1q-TsQflE2iHL3g-Pd_RLQHxwVHBFOkw0";
-downloadFile(FILE_ID);
+// const FILE_ID = "1q-TsQflE2iHL3g-Pd_RLQHxwVHBFOkw0";
+// downloadFile(FILE_ID);
+
+export { googleUploadFile, googleDownloadFile };

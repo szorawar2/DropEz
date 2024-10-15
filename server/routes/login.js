@@ -53,6 +53,7 @@ router.post("/login", async (req, res) => {
 
     let messagesArr = [];
     messages.rows.forEach((row, index) => {
+      // console.log(row.item_fileid);
       const messageObj = {
         text: row.item_message,
         fileItem: {

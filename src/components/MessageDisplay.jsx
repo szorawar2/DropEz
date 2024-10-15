@@ -6,13 +6,15 @@ import axios from "axios";
 function MessageDisplay() {
   const { messages, currentUser } = useContext(Context);
 
-  const handleDownload = async (user, index, fileName) => {
+  const handleDownload = async (fileId, fileName) => {
+    console.log(fileId);
     try {
       const response = await axios.get("http://localhost:5000/load_file", {
         params: {
-          userID: user,
-          message_index: index,
-          fileName: fileName,
+          // userID: user,
+          // message_index: index,
+          // fileName: fileName,
+          fileId: fileId,
         },
         responseType: "blob", // Ensures binary data is handled correctly
       });
@@ -35,14 +37,14 @@ function MessageDisplay() {
       ) : (
         messages.map((messageObj, index) => (
           <div key={index} className={styles.message}>
+            {/* {console.log(messageObj.fileItem.fileId)} */}
             {messageObj.text && <p>{messageObj.text}</p>}
             {messageObj.fileItem.fileName && (
               <button
                 className={styles.downloadButton}
                 onClick={() =>
                   handleDownload(
-                    currentUser,
-                    index,
+                    messageObj.fileItem.fileId,
                     messageObj.fileItem.fileName
                   )
                 }

@@ -17,6 +17,8 @@ function TextInput() {
 
   const fileInputRef = useRef(null);
 
+  const [driveID, setDriveID] = useState("");
+
   const handleFileInput = (e) => {
     const uploadedFile = e.target.files[0]; //Target data
     //console.log(uploadedFile);
@@ -48,8 +50,6 @@ function TextInput() {
         var fileToSend = fileInputRef.current.files[0];
         const formData = new FormData();
         formData.append("file", fileInputRef.current.files[0]);
-        // formData.append("userID", currentUser);
-        // formData.append("message_index", messages.length); // Send message index
 
         try {
           const result = await axios.post(
@@ -60,6 +60,26 @@ function TextInput() {
             }
           );
           console.log(result.data);
+          setDriveID(result.data.file_driveId);
+          //console.log(driveID);
+
+          setMessages([
+            ...messages,
+            { text: note, fileItem: { fileName: currentFile.fileName } },
+          ]); // Add message and files
+          try {
+            const result = await axios.post(
+              "http://localhost:5000/updatemessages",
+              {
+                id: currentUser,
+                message_text: note,
+                file_text: currentFile.fileName,
+                file_driveId: driveID,
+              }
+            );
+          } catch (error) {
+            console.error(error);
+          }
         } catch (error) {
           console.error(error);
         }
@@ -86,21 +106,6 @@ function TextInput() {
       //   console.error("Error fetching file:", error);
       // }
 
-      setMessages([...messages, { text: note, fileItem: currentFile }]); // Add message and files
-      try {
-        const result = await axios.post(
-          "http://localhost:5000/updatemessages",
-          {
-            id: currentUser,
-            message_text: note,
-            file_text: currentFile.fileName,
-          }
-        );
-        //console.log(result.data);
-        //console.log(currentFile.fileName);
-      } catch (error) {
-        console.error(error);
-      }
       setNote(""); // Clear message input
       setCurrentFile({ fileName: "" }); // Clear files after submission
       fileInputRef.current.value = "";
