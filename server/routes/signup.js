@@ -14,12 +14,12 @@ router.post("/signup", async (req, res) => {
 
   try {
     // Query the database to find the user by ID
-    const result = await pool.query(
-      "SELECT * FROM userbase WHERE username = $1",
+    const [rows] = await pool.query(
+      "SELECT * FROM userbase WHERE username = ?",
       [username]
     );
 
-    if (result.rows.length) {
+    if (rows.length) {
       return res.json({ error: 1, message: "User already exists" });
     }
   } catch (err) {
@@ -33,7 +33,7 @@ router.post("/signup", async (req, res) => {
 
   try {
     await pool.query(
-      "INSERT INTO userbase (username, password) VALUES ($1, $2)",
+      "INSERT INTO userbase (username, password) VALUES (?, ?)",
       [username, password]
     );
   } catch (error) {
@@ -41,11 +41,11 @@ router.post("/signup", async (req, res) => {
   }
 
   try {
-    const result = await pool.query(
+    const [result] = await pool.query(
       "SELECT * FROM userbase WHERE username = $1",
       [username]
     );
-    userID = result.rows[0].id;
+    userID = result[0].id;
     //console.log(result.rows[0].id);
 
     // Generate JWT token

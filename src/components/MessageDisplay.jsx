@@ -8,6 +8,7 @@ function MessageDisplay() {
 
   const handleDownload = async (fileId, fileName) => {
     console.log(fileId);
+    console.log(fileName);
     try {
       const response = await axios.get("http://localhost:5000/load_file", {
         params: {
@@ -37,7 +38,6 @@ function MessageDisplay() {
       ) : (
         messages.map((messageObj, index) => (
           <div key={index} className={styles.message}>
-            {/* {console.log(messageObj.fileItem.fileId)} */}
             {messageObj.text && <p>{messageObj.text}</p>}
             {messageObj.fileItem.fileName && (
               <button

@@ -15,16 +15,16 @@ router.post("/login", async (req, res) => {
 
   try {
     // Query the database to find the user by ID
-    const result = await pool.query(
-      "SELECT * FROM userbase WHERE username = $1",
+    const [rows] = await pool.query(
+      "SELECT * FROM userbase WHERE username = ?",
       [username]
     );
 
-    if (result.rows.length === 0) {
+    if (rows.length === 0) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    user = result.rows[0];
+    user = rows[0];
 
     // Compare the provided password with the stored hashed password
     // const passwordMatch = bcrypt.compareSync(password, user.password);
@@ -46,13 +46,13 @@ router.post("/login", async (req, res) => {
   }
 
   try {
-    const messages = await pool.query(
-      "SELECT * FROM userdata WHERE user_id = $1",
+    const [messages] = await pool.query(
+      "SELECT * FROM userdata WHERE user_id = ?",
       [user.id]
     );
 
     let messagesArr = [];
-    messages.rows.forEach((row, index) => {
+    messages.forEach((row, index) => {
       // console.log(row.item_fileid);
       const messageObj = {
         text: row.item_message,

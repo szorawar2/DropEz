@@ -26,7 +26,7 @@ oauth2Client.on("tokens", async (tokens) => {
     ACCESS_TOKEN = tokens.access_token; // Store the new access token if required
 
     try {
-      await pool.query("UPDATE accesstoken SET acc_token = $1 WHERE id = $2", [
+      await pool.query("UPDATE accesstoken SET acc_token = ? WHERE id = ?", [
         ACCESS_TOKEN,
         1,
       ]);
@@ -43,12 +43,12 @@ async function googleUploadFile(
   fileName,
   mimeType
 ) {
-  const dbResult = await pool.query(
+  const [dbResult] = await pool.query(
     "SELECT acc_token FROM accesstoken WHERE id = 1"
   );
   //console.log("current token:", dbResult.rows[0].acc_token);
 
-  ACCESS_TOKEN = dbResult.rows[0].acc_token;
+  ACCESS_TOKEN = dbResult[0].acc_token;
 
   oauth2Client.setCredentials({
     access_token: ACCESS_TOKEN,
@@ -85,11 +85,11 @@ async function googleUploadFile(
 async function googleDownloadFile(fileId, res) {
   // const destPath = path.join("..", "downloads", "downloaded_file.txt");
 
-  const dbResult = await pool.query(
+  const [dbResult] = await pool.query(
     "SELECT acc_token FROM accesstoken WHERE id = 1"
   );
 
-  ACCESS_TOKEN = dbResult.rows[0].acc_token;
+  ACCESS_TOKEN = dbResult[0].acc_token;
 
   oauth2Client.setCredentials({
     access_token: ACCESS_TOKEN,

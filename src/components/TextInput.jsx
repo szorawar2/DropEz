@@ -36,6 +36,7 @@ function TextInput() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (note.trim() || currentFile.fileName) {
       if (currentFile.fileName) {
         try {
@@ -60,13 +61,11 @@ function TextInput() {
             }
           );
           console.log(result.data);
-          setDriveID(result.data.file_driveId);
-          //console.log(driveID);
 
-          setMessages([
-            ...messages,
-            { text: note, fileItem: { fileName: currentFile.fileName } },
-          ]); // Add message and files
+          setDriveID(result.data.file_driveId);
+
+          console.log(driveID);
+
           try {
             const result = await axios.post(
               "http://localhost:5000/updatemessages",
@@ -77,9 +76,49 @@ function TextInput() {
                 file_driveId: driveID,
               }
             );
+
+            setMessages([
+              ...messages,
+              {
+                text: note,
+                fileItem: {
+                  fileName: currentFile.fileName,
+                  fileId: driveID,
+                },
+              },
+            ]); // Add message and files
           } catch (error) {
             console.error(error);
           }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      //For condition when only message is sent and no file is attached
+      if (note && !currentFile.fileName) {
+        console.log(note);
+        try {
+          const result = await axios.post(
+            "http://localhost:5000/updatemessages",
+            {
+              id: currentUser,
+              message_text: note,
+              file_text: "",
+              file_driveId: "",
+            }
+          );
+
+          setMessages([
+            ...messages,
+            {
+              text: note,
+              fileItem: {
+                fileName: "",
+                fileId: "",
+              },
+            },
+          ]); // Add message and files
         } catch (error) {
           console.error(error);
         }

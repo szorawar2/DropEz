@@ -8,6 +8,7 @@ router.get("/load_file", async (req, res) => {
   const { fileId } = req.query;
   // const fileDetail = `${userID}_${message_index}_${fileName}`;
   // const filePath = path.resolve("../uploads", fileDetail);
+  console.log(fileId);
 
   if (!fileId) {
     return res.status(400).json({ error: "File ID is required" });
