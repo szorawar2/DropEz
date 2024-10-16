@@ -1,12 +1,13 @@
-import pkg from "pg";
-const { Pool } = pkg;
+/* For SQL */
+
+import mysql from "mysql2/promise";
 import dotenv from "dotenv";
 
 // Load environment variables from .env file
 dotenv.config();
 
 // Create a pool for managing connections
-const pool = new Pool({
+const pool = mysql.createPool({
   user: process.env.DB_USER, // Database username
   host: process.env.DB_HOST, // Database host (localhost if running locally)
   database: process.env.DB_DATABASE, // Database name

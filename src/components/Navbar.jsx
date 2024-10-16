@@ -1,10 +1,10 @@
 import "../styles/vars.css";
-import styles from "../styles/Navbar.module.css"; // Create a separate CSS file for navbar styles
+import styles from "../styles/Navbar.module.css";
 
 function Navbar() {
   return (
     <nav className={styles.navbar}>
-      <h1 className={styles.logo}>Drop-EZ</h1>
+      <h1 className={styles.logo}>Dez.</h1>
       <ul className={styles.navLinks}>
         <li>
           <a href="#features">Features</a>
