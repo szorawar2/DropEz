@@ -40,9 +40,9 @@ function App() {
 
   return (
     <div className={styles.App}>
-      <Navbar />
       {token ? (
         <>
+          <Navbar />
           <MessageDisplay />
           <TextInput />
         </>
