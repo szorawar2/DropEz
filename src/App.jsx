@@ -7,8 +7,6 @@ import TextInput from "./components/TextInput";
 import Login from "./components/Login";
 import Signup from "./components/signup";
 import MessageDisplay from "./components/MessageDisplay";
-//import FileUpload from "./components/FileUpload";
-import LoginTemplate from "./components/LoginTemplate";
 import { Context } from "./Context";
 
 function App() {

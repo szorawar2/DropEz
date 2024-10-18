@@ -1,21 +1,35 @@
 /* MessageDisplay.module.css */
 .messageDisplayContainer {
-  max-height: 400px; /* Limit height */
+  /* max-height: 400px; Limit height */
+  display: flex;
+  flex-direction: column;
+  height: 90%;
   overflow-y: auto; /* Scroll if overflow */
-  border: 1px solid var(--text-color);
-  border-radius: 10px;
   padding: 10px;
-  margin: 20px 0;
-  background-color: var(--background-color);
+  padding-bottom: 0px;
+  /* margin-bottom: 12%; */
+
+  /* background-color: var(--col8); */
+}
+
+.messageDisplayContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.noMessages {
+  color: var(--col8);
 }
 
 .message {
-  background-color: var(--primary-color);
-  color: white;
-  border-radius: 10px;
+  align-self: flex-start;
+  background-color: var(--col10);
+  color: var(--col3);
+  border-radius: 15px;
   padding: 10px;
+  padding-right: 60px;
   margin-bottom: 10px;
   max-width: 80%; /* Limit width */
+  min-width: 5%;
 }
 
 .fileList {
@@ -24,18 +38,35 @@
 }
 
 .fileItem {
-  background-color: var(--secondary-color);
+  background-color: var(--col2);
   color: white;
   padding: 10px;
   border-radius: 5px;
   margin-top: 10px;
 }
 
-.downloadLink {
+/* .downloadLink {
   color: white;
   text-decoration: none;
 }
 
 .downloadLink:hover {
   text-decoration: underline;
+} */
+
+.downloadLabel {
+  background-color: var(--col3);
+  color: var(--col8);
+  padding: 8px 15px;
+  border-radius: 50px;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+  text-align: center;
+  display: inline-block;
+}
+.downloadLabel:hover {
+  background-color: var(--col3);
+  transform: scale(1.025);
 }

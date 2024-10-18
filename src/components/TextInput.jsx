@@ -3,6 +3,8 @@ import MessageDisplay from "./MessageDisplay";
 import styles from "../styles/TextInput.module.css";
 import { Context } from "../Context";
 import axios from "axios";
+import AttachmentIcon from "../../assets/attachment.svg";
+import SendIcon from "../../assets/send.svg";
 
 function TextInput() {
   const {
@@ -160,17 +162,33 @@ function TextInput() {
           onChange={handleChange}
           placeholder="Type a message..."
         />
+        <label className={styles.customFileInput} htmlFor="file-upload">
+          <img
+            src={AttachmentIcon}
+            alt="Upload"
+            className={styles.uploadIcon}
+          />
+        </label>
         <input
           type="file"
+          id="file-upload"
           className={styles.fileInput}
           onInput={handleFileInput}
           ref={fileInputRef}
         />
-        <a href={currentFile.url} download={currentFile.fileName}>
-          {currentFile.fileName}
-        </a>
+        {currentFile.fileName ? (
+          <a
+            className={styles.currentFile}
+            href={currentFile.url}
+            download={currentFile.fileName}
+          >
+            {currentFile.fileName}
+          </a>
+        ) : (
+          <></>
+        )}
         <button type="submit" className={styles.sendBtn}>
-          Send
+          <img src={SendIcon} alt="Send" className={styles.sendIcon} />
         </button>
       </form>
     </div>

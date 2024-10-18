@@ -58,7 +58,7 @@ async function googleUploadFile(
   try {
     const response = await drive.files.create({
       requestBody: {
-        name: `${userID}_${messageIndex}_${fileName}.txt`,
+        name: `${userID}_${messageIndex}_${fileName}`,
         mimeType: mimeType,
       },
       media: {
