@@ -4,8 +4,8 @@ import styles from "../styles/Navbar.module.css";
 function Navbar() {
   return (
     <nav className={styles.navbar}>
-      <h1 className={styles.logo}>Dez.</h1>
-      <ul className={styles.navLinks}>
+      <h1 className={styles.logo}>Dezit</h1>
+      {/* <ul className={styles.navLinks}>
         <li>
           <a href="#features">Features</a>
         </li>
@@ -18,7 +18,7 @@ function Navbar() {
         <li>
           <button className={styles.loginBtn}>Login</button>
         </li>
-      </ul>
+      </ul> */}
     </nav>
   );
 }

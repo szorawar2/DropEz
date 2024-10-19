@@ -21,6 +21,8 @@ function TextInput() {
 
   const [driveID, setDriveID] = useState("");
 
+  let driveFileId = "";
+
   const handleFileInput = (e) => {
     const uploadedFile = e.target.files[0]; //Target data
     //console.log(uploadedFile);
@@ -65,6 +67,7 @@ function TextInput() {
           console.log(result.data);
 
           setDriveID(result.data.file_driveId);
+          driveFileId = result.data.file_driveId;
 
           console.log(driveID);
 
@@ -75,7 +78,7 @@ function TextInput() {
                 id: currentUser,
                 message_text: note,
                 file_text: currentFile.fileName,
-                file_driveId: driveID,
+                file_driveId: driveFileId,
               }
             );
 
@@ -85,7 +88,7 @@ function TextInput() {
                 text: note,
                 fileItem: {
                   fileName: currentFile.fileName,
-                  fileId: driveID,
+                  fileId: driveFileId,
                 },
               },
             ]); // Add message and files
@@ -125,27 +128,6 @@ function TextInput() {
           console.error(error);
         }
       }
-
-      // //Load file
-      // try {
-      //   const response = await axios.get(`http://localhost:5000/load_file`, {
-      //     params: {
-      //       userID: 1,
-      //       message_index: 1,
-      //       fileName: "upload test.txt",
-      //     },
-      //     responseType: "blob", // If the file is a blob (e.g., image, text, etc.)
-      //   });
-
-      //   // If it's a file, create an object URL and set it to the state
-      //   const fileURL = URL.createObjectURL(new Blob([response.data]));
-
-      //   // You can now display the file in the frontend (e.g., set the src of an img or a link to download)
-      //   console.log("File URL:", fileURL);
-      //   //return fileURL;
-      // } catch (error) {
-      //   console.error("Error fetching file:", error);
-      // }
 
       setNote(""); // Clear message input
       setCurrentFile({ fileName: "" }); // Clear files after submission
