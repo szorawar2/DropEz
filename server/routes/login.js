@@ -21,7 +21,10 @@ router.post("/login", async (req, res) => {
     );
 
     if (rows.length === 0) {
-      return res.status(404).json({ message: "User not found" });
+      return res.json({
+        error: 1,
+        status: "Invalid username and password combination",
+      });
     }
 
     user = rows[0];
@@ -33,7 +36,10 @@ router.post("/login", async (req, res) => {
     //   return res.status(401).json({ message: "Invalid password" });
     // }
     if (password !== user.password) {
-      return res.status(401).json({ message: "Invalid password" });
+      return res.json({
+        error: 2,
+        status: "Invalid username and password combination",
+      });
     }
 
     // Generate JWT token
@@ -42,7 +48,7 @@ router.post("/login", async (req, res) => {
     // return res.json({ token });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ status: "Server error" });
   }
 
   try {

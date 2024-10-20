@@ -1,6 +1,7 @@
 import { google } from "googleapis";
 import path from "path";
 import fs from "fs";
+import mime from "mime-types";
 
 import pool from "./db.js";
 
@@ -58,7 +59,7 @@ async function googleUploadFile(
   try {
     const response = await drive.files.create({
       requestBody: {
-        name: `${userID}_${messageIndex}_${fileName}.txt`,
+        name: `${userID}_${messageIndex}_${fileName}`,
         mimeType: mimeType,
       },
       media: {
@@ -104,12 +105,23 @@ async function googleDownloadFile(fileId, res) {
       { responseType: "stream" }
     );
 
+    // Get file metadata to determine its name and MIME type
+    const fileMetadata = await drive.files.get({
+      fileId: fileId,
+      fields: "name, mimeType",
+    });
+    const fileName = fileMetadata.data.name || "downloaded_file";
+    const mimeType =
+      fileMetadata.data.mimeType ||
+      mime.lookup(fileName) ||
+      "application/octet-stream";
+
+    console.log(fileName, mimeType);
+
     // Set the response headers to prompt a download
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="downloaded_file.txt"`
-    ); // Change filename accordingly
-    res.setHeader("Content-Type", "application/octet-stream"); // Set the content type appropriately
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`); // Change filename accordingly
+    res.setHeader("Content-Type", mimeType);
+    //res.setHeader("Content-Type", "application/octet-stream"); // Set the content type appropriately
 
     response.data
       .on("end", () => {

@@ -1,10 +1,19 @@
-import { useContext } from "react";
+import { useContext, useRef, useEffect } from "react";
 import styles from "../styles/MessageDisplay.module.css";
 import { Context } from "../Context";
 import axios from "axios";
 
 function MessageDisplay() {
   const { messages, currentUser } = useContext(Context);
+
+  const messagesEndRef = useRef(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  // Scroll to the bottom when the component mounts or messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleDownload = async (fileId, fileName) => {
     console.log(fileId);
@@ -34,14 +43,14 @@ function MessageDisplay() {
   return (
     <div className={styles.messageDisplayContainer}>
       {messages.length === 0 ? (
-        <p>No messages yet.</p>
+        <p className={styles.noMessages}>No messages yet.</p>
       ) : (
         messages.map((messageObj, index) => (
           <div key={index} className={styles.message}>
             {messageObj.text && <p>{messageObj.text}</p>}
             {messageObj.fileItem.fileName && (
-              <button
-                className={styles.downloadButton}
+              <label
+                className={styles.downloadLabel}
                 onClick={() =>
                   handleDownload(
                     messageObj.fileItem.fileId,
@@ -49,9 +58,10 @@ function MessageDisplay() {
                   )
                 }
               >
-                Download {messageObj.fileItem.fileName}
-              </button>
+                {messageObj.fileItem.fileName}
+              </label>
             )}
+            <div ref={messagesEndRef} />
           </div>
         ))
       )}

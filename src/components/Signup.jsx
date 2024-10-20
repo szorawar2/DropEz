@@ -2,6 +2,7 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { Context } from "../Context";
+import styles from "../styles/Login.module.css";
 
 function Signup() {
   const {
@@ -40,39 +41,42 @@ function Signup() {
   };
 
   return (
-    <div>
-      <h1>Signup</h1>
-      <div>
-        {err ? (
-          <p style={{ color: "var(--secondary-color)" }}>{status}</p>
-        ) : (
-          <></>
-        )}
+    <div className={styles.loginScreen}>
+      <div className={styles.loginContainer}>
+        <h1>Signup</h1>
+        <div className={styles.loginForm}>
+          <div className={styles.error}>{err ? <p>{status}</p> : <></>}</div>
+          <form onSubmit={handleSignup}>
+            <div className={styles.inputContainer}>
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className={styles.buttonContainer}>
+              <button type="submit">Signup</button>
+              <button
+                className={styles.setSignup}
+                onClick={() => {
+                  setLogin(true);
+                }}
+                type="button"
+              >
+                {" "}
+                Login instead?
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-      <form onSubmit={handleSignup}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">Signup</button>
-        <button
-          onClick={() => {
-            setLogin(true);
-          }}
-          type="button"
-        >
-          {" "}
-          Login instead?
-        </button>
-      </form>
     </div>
   );
 }
