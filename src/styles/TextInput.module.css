@@ -2,7 +2,7 @@
 .textInputContainer {
   display: flex;
   justify-content: space-between;
-  /* position: absolute; */
+  position: absolute;
   bottom: 0px;
   background-color: var(--col3);
   margin: 0px;

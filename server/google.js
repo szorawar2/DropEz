@@ -135,16 +135,11 @@ async function googleDownloadFile(fileId, res) {
     if (error.response && error.response.status === 401) {
       console.log("Access token expired, refreshing...");
       await oauth2Client.getAccessToken(); // Refresh the token if it expired
-      return googleUploadFile(); // Retry the upload
+      return googleDownloadFile(); // Retry the upload
     } else {
-      console.error("Upload Failed:", error.message);
+      console.error("Download Failed:", error.message);
     }
   }
 }
-
-//uploadFile();
-
-// const FILE_ID = "1q-TsQflE2iHL3g-Pd_RLQHxwVHBFOkw0";
-// downloadFile(FILE_ID);
 
 export { googleUploadFile, googleDownloadFile };

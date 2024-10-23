@@ -3,10 +3,11 @@
   /* max-height: 400px; Limit height */
   display: flex;
   flex-direction: column;
-  height: 90%;
+  top: 10%;
+  height: 80%;
   overflow-y: auto; /* Scroll if overflow */
   padding: 10px;
-  padding-bottom: 0px;
+  padding-bottom: 5px;
   /* margin-bottom: 12%; */
 
   /* background-color: var(--col8); */
@@ -69,4 +70,10 @@
 .downloadLabel:hover {
   background-color: var(--col3);
   transform: scale(1.025);
+}
+
+@media (max-width: 600px) {
+  .messageDisplayContainer {
+    position: fixed;
+  }
 }

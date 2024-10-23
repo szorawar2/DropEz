@@ -12,6 +12,7 @@ function Signup() {
     setCurrentUser,
     setMessages,
     setLogin,
+    api,
   } = useContext(Context);
 
   const [username, setUsername] = useState("");
@@ -23,7 +24,7 @@ function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/signup", {
+      const response = await axios.post(`${api}signup`, {
         username,
         password,
       });

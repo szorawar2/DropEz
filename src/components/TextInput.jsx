@@ -15,6 +15,7 @@ function TextInput() {
     currentFile,
     setCurrentFile,
     currentUser,
+    api,
   } = useContext(Context);
 
   const fileInputRef = useRef(null);
@@ -44,7 +45,7 @@ function TextInput() {
     if (note.trim() || currentFile.fileName) {
       if (currentFile.fileName) {
         try {
-          await axios.post("http://localhost:5000/upload_id", {
+          await axios.post(`${api}upload_id`, {
             userID: currentUser,
             message_index: messages.length,
           });
@@ -57,30 +58,23 @@ function TextInput() {
         formData.append("file", fileInputRef.current.files[0]);
 
         try {
-          const result = await axios.post(
-            "http://localhost:5000/upload",
-            formData,
-            {
-              headers: { "Content-Type": "multipart/form-data" }, // Important for file upload
-            }
-          );
+          const result = await axios.post(`${api}upload`, formData, {
+            headers: { "Content-Type": "multipart/form-data" }, // Important for file upload
+          });
           console.log(result.data);
 
           setDriveID(result.data.file_driveId);
           driveFileId = result.data.file_driveId;
 
-          console.log(driveID);
+          console.log(driveFileId);
 
           try {
-            const result = await axios.post(
-              "http://localhost:5000/updatemessages",
-              {
-                id: currentUser,
-                message_text: note,
-                file_text: currentFile.fileName,
-                file_driveId: driveFileId,
-              }
-            );
+            const result = await axios.post(`${api}updatemessages`, {
+              id: currentUser,
+              message_text: note,
+              file_text: currentFile.fileName,
+              file_driveId: driveFileId,
+            });
 
             setMessages([
               ...messages,
@@ -104,15 +98,12 @@ function TextInput() {
       if (note && !currentFile.fileName) {
         console.log(note);
         try {
-          const result = await axios.post(
-            "http://localhost:5000/updatemessages",
-            {
-              id: currentUser,
-              message_text: note,
-              file_text: "",
-              file_driveId: "",
-            }
-          );
+          const result = await axios.post(`${api}updatemessages`, {
+            id: currentUser,
+            message_text: note,
+            file_text: "",
+            file_driveId: "",
+          });
 
           setMessages([
             ...messages,
