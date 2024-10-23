@@ -1,14 +1,7 @@
-/* Navbar.module.css */
-
-/* * {
-  box-sizing: border-box;
-} */
-
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* padding: 10px 20px; */
   background-color: var(--col8);
   width: 100%;
   z-index: 1000; /* Stacks it on top of other elements */
@@ -28,7 +21,6 @@
   list-style: none;
   display: flex;
   align-items: center;
-  /* gap: 20px; */
 }
 
 .navLinks {
