@@ -1,25 +1,19 @@
 // src/Login.jsx
 import React, { useState, useContext } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { Context } from "../Context";
 import styles from "../styles/Login.module.css";
 
 function Signup() {
-  const {
-    token,
-    setToken,
-    currentUser,
-    setCurrentUser,
-    setMessages,
-    setLogin,
-    api,
-  } = useContext(Context);
+  const { setToken, setCurrentUser, setLogin, api } = useContext(Context);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const [err, setErr] = useState(0);
   const [status, setStatus] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -30,14 +24,15 @@ function Signup() {
       });
       setErr(response.data.error);
       setStatus(response.data.message);
-      console.log(status);
       if (response.data.token) {
         setToken(response.data.token);
+        setCurrentUser(response.data.id);
+        localStorage.setItem("token", response.data.token); // Store token
+        navigate("/messages");
       }
       setCurrentUser(response.data.id);
-      console.log(response.data);
     } catch (error) {
-      console.log("Signup failed");
+      console.log(error);
     }
   };
 
@@ -68,6 +63,7 @@ function Signup() {
                 className={styles.setSignup}
                 onClick={() => {
                   setLogin(true);
+                  navigate("/login");
                 }}
                 type="button"
               >

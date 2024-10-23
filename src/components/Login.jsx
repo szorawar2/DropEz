@@ -1,25 +1,20 @@
 // src/Login.jsx
 import React, { useState, useContext } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { Context } from "../Context";
 import styles from "../styles/Login.module.css";
 
 function Login() {
-  const {
-    token,
-    setToken,
-    currentUser,
-    setCurrentUser,
-    setMessages,
-    setLogin,
-    api,
-  } = useContext(Context);
+  const { setToken, setCurrentUser, setMessages, setLogin, api } =
+    useContext(Context);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const [err, setErr] = useState(0);
   const [status, setStatus] = useState("");
+
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -28,13 +23,18 @@ function Login() {
         username,
         password,
       });
-      setToken(response.data.token); // Pass the token to the parent component
-      //console.log(response.data);
-      console.log("Login succesful");
-      setCurrentUser(response.data.id);
+      //
       setMessages(response.data.messagesData);
       setErr(response.data.error);
       setStatus(response.data.status);
+
+      if (response.data.token) {
+        setToken(response.data.token);
+        setCurrentUser(response.data.id);
+        localStorage.setItem("token", response.data.token); // Store token
+        navigate("/messages");
+      }
+      //
     } catch (error) {
       console.log("Login failed");
     }
@@ -69,6 +69,7 @@ function Login() {
                 className={styles.setSignup}
                 onClick={() => {
                   setLogin(false);
+                  navigate("/signup");
                 }}
                 type="button"
               >

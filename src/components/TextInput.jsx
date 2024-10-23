@@ -20,17 +20,12 @@ function TextInput() {
 
   const fileInputRef = useRef(null);
 
-  const [driveID, setDriveID] = useState("");
-
   let driveFileId = "";
 
   const handleFileInput = (e) => {
     const uploadedFile = e.target.files[0]; //Target data
-    //console.log(uploadedFile);
-    //console.log(uploadedFile);
     const newFile = {
       fileName: uploadedFile.name,
-      //fileData: uploadedFile,
       url: URL.createObjectURL(uploadedFile), // Create a URL for each file
     };
     setCurrentFile(newFile);
@@ -62,12 +57,9 @@ function TextInput() {
           const result = await axios.post(`${api}upload`, formData, {
             headers: { "Content-Type": "multipart/form-data" }, // Important for file upload
           });
-          console.log(result.data);
 
           setDriveID(result.data.file_driveId);
           driveFileId = result.data.file_driveId;
-
-          console.log(driveFileId);
 
           try {
             const result = await axios.post(`${api}updatemessages`, {
@@ -97,7 +89,6 @@ function TextInput() {
 
       //For condition when only message is sent and no file is attached
       if (note && !currentFile.fileName) {
-        console.log(note);
         try {
           const result = await axios.post(`${api}updatemessages`, {
             id: currentUser,

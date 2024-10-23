@@ -1,5 +1,11 @@
 import { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 
 import styles from "./styles/App.module.css";
 import Navbar from "./components/Navbar";
@@ -7,12 +13,14 @@ import TextInput from "./components/TextInput";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import MessageDisplay from "./components/MessageDisplay";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { Context } from "./Context";
 
 function App() {
   const { token, setToken, login, setLogin } = useContext(Context);
+  const navigate = useNavigate();
 
-  const [isLoading, setIsLoading] = useState(false); // To show a loading state
+  // const [isLoading, setIsLoading] = useState(false); // To show a loading state
 
   // Check if token exists when the app loads
   // useEffect(() => {
@@ -32,23 +40,45 @@ function App() {
   //   checkToken();
   // }, []);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
+
+  useEffect(() => {
+    if (location.pathname === "/login") {
+      setToken(null); // Clear token on back to login
+    }
+  }, [location]);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken); // Set token if found in localStorage
+      // console.log("stored token:", storedToken);
+    } else {
+      navigate("/login"); // Redirect to login if no token
+    }
+  }, [setToken, navigate]);
 
   return (
     <div className={styles.App}>
-      {token ? (
-        <>
-          <Navbar />
-          <MessageDisplay />
-          <TextInput />
-        </>
-      ) : login ? (
-        <Login />
-      ) : (
-        <Signup />
-      )}
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/messages"
+          element={
+            <ProtectedRoute>
+              <>
+                <Navbar />
+                <MessageDisplay />
+                <TextInput />
+              </>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
     </div>
   );
 }

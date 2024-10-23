@@ -41,25 +41,30 @@ function MessageDisplay() {
       {messages.length === 0 ? (
         <p className={styles.noMessages}>No messages yet.</p>
       ) : (
-        messages.map((messageObj, index) => (
-          <div key={index} className={styles.message}>
-            {messageObj.text && <p>{messageObj.text}</p>}
-            {messageObj.fileItem.fileName && (
-              <label
-                className={styles.downloadLabel}
-                onClick={() =>
-                  handleDownload(
-                    messageObj.fileItem.fileId,
-                    messageObj.fileItem.fileName
-                  )
-                }
-              >
-                {messageObj.fileItem.fileName}
-              </label>
-            )}
-            <div ref={messagesEndRef} />
+        <div className={styles.messageMap}>
+          {messages.map((messageObj, index) => (
+            <div key={index} className={styles.message}>
+              {messageObj.text && <p>{messageObj.text}</p>}
+              {messageObj.fileItem.fileName && (
+                <label
+                  className={styles.downloadLabel}
+                  onClick={() =>
+                    handleDownload(
+                      messageObj.fileItem.fileId,
+                      messageObj.fileItem.fileName
+                    )
+                  }
+                >
+                  {messageObj.fileItem.fileName}
+                </label>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          ))}
+          <div className={styles.blank}>
+            <p style={{ color: "var(--col3)" }}>lol</p>
           </div>
-        ))
+        </div>
       )}
     </div>
   );
