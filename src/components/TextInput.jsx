@@ -3,6 +3,8 @@ import MessageDisplay from "./MessageDisplay";
 import styles from "../styles/TextInput.module.css";
 import { Context } from "../Context";
 import axios from "axios";
+import AttachmentIcon from "../../assets/attachment.svg";
+import SendIcon from "../../assets/send.svg";
 
 function TextInput() {
   const {
@@ -13,14 +15,18 @@ function TextInput() {
     currentFile,
     setCurrentFile,
     currentUser,
+    api,
   } = useContext(Context);
 
   const fileInputRef = useRef(null);
 
   const [driveID, setDriveID] = useState("");
 
+  let driveFileId = "";
+
   const handleFileInput = (e) => {
     const uploadedFile = e.target.files[0]; //Target data
+    //console.log(uploadedFile);
     //console.log(uploadedFile);
     const newFile = {
       fileName: uploadedFile.name,
@@ -40,7 +46,7 @@ function TextInput() {
     if (note.trim() || currentFile.fileName) {
       if (currentFile.fileName) {
         try {
-          await axios.post("http://localhost:5000/upload_id", {
+          await axios.post(`${api}upload_id`, {
             userID: currentUser,
             message_index: messages.length,
           });
@@ -53,29 +59,23 @@ function TextInput() {
         formData.append("file", fileInputRef.current.files[0]);
 
         try {
-          const result = await axios.post(
-            "http://localhost:5000/upload",
-            formData,
-            {
-              headers: { "Content-Type": "multipart/form-data" }, // Important for file upload
-            }
-          );
+          const result = await axios.post(`${api}upload`, formData, {
+            headers: { "Content-Type": "multipart/form-data" }, // Important for file upload
+          });
           console.log(result.data);
 
           setDriveID(result.data.file_driveId);
+          driveFileId = result.data.file_driveId;
 
-          console.log(driveID);
+          console.log(driveFileId);
 
           try {
-            const result = await axios.post(
-              "http://localhost:5000/updatemessages",
-              {
-                id: currentUser,
-                message_text: note,
-                file_text: currentFile.fileName,
-                file_driveId: driveID,
-              }
-            );
+            const result = await axios.post(`${api}updatemessages`, {
+              id: currentUser,
+              message_text: note,
+              file_text: currentFile.fileName,
+              file_driveId: driveFileId,
+            });
 
             setMessages([
               ...messages,
@@ -83,7 +83,7 @@ function TextInput() {
                 text: note,
                 fileItem: {
                   fileName: currentFile.fileName,
-                  fileId: driveID,
+                  fileId: driveFileId,
                 },
               },
             ]); // Add message and files
@@ -99,15 +99,12 @@ function TextInput() {
       if (note && !currentFile.fileName) {
         console.log(note);
         try {
-          const result = await axios.post(
-            "http://localhost:5000/updatemessages",
-            {
-              id: currentUser,
-              message_text: note,
-              file_text: "",
-              file_driveId: "",
-            }
-          );
+          const result = await axios.post(`${api}updatemessages`, {
+            id: currentUser,
+            message_text: note,
+            file_text: "",
+            file_driveId: "",
+          });
 
           setMessages([
             ...messages,
@@ -124,27 +121,6 @@ function TextInput() {
         }
       }
 
-      // //Load file
-      // try {
-      //   const response = await axios.get(`http://localhost:5000/load_file`, {
-      //     params: {
-      //       userID: 1,
-      //       message_index: 1,
-      //       fileName: "upload test.txt",
-      //     },
-      //     responseType: "blob", // If the file is a blob (e.g., image, text, etc.)
-      //   });
-
-      //   // If it's a file, create an object URL and set it to the state
-      //   const fileURL = URL.createObjectURL(new Blob([response.data]));
-
-      //   // You can now display the file in the frontend (e.g., set the src of an img or a link to download)
-      //   console.log("File URL:", fileURL);
-      //   //return fileURL;
-      // } catch (error) {
-      //   console.error("Error fetching file:", error);
-      // }
-
       setNote(""); // Clear message input
       setCurrentFile({ fileName: "" }); // Clear files after submission
       fileInputRef.current.value = "";
@@ -160,17 +136,33 @@ function TextInput() {
           onChange={handleChange}
           placeholder="Type a message..."
         />
+        <label className={styles.customFileInput} htmlFor="file-upload">
+          <img
+            src={AttachmentIcon}
+            alt="Upload"
+            className={styles.uploadIcon}
+          />
+        </label>
         <input
           type="file"
+          id="file-upload"
           className={styles.fileInput}
           onInput={handleFileInput}
           ref={fileInputRef}
         />
-        <a href={currentFile.url} download={currentFile.fileName}>
-          {currentFile.fileName}
-        </a>
+        {currentFile.fileName ? (
+          <a
+            className={styles.currentFile}
+            href={currentFile.url}
+            download={currentFile.fileName}
+          >
+            {currentFile.fileName}
+          </a>
+        ) : (
+          <></>
+        )}
         <button type="submit" className={styles.sendBtn}>
-          Send
+          <img src={SendIcon} alt="Send" className={styles.sendIcon} />
         </button>
       </form>
     </div>

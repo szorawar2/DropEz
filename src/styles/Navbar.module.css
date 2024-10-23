@@ -1,17 +1,27 @@
 /* Navbar.module.css */
+
+/* * {
+  box-sizing: border-box;
+} */
+
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   /* padding: 10px 20px; */
-  background-color: var(--primary-color);
+  background-color: var(--col8);
+  width: 100%;
+  z-index: 1000; /* Stacks it on top of other elements */
+  top: 0;
+  left: 0;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
 .logo {
   font-size: 24px;
   margin: 0px;
   padding: 20px;
-  color: var(--head-text-color);
+  color: var(--col3);
 }
 
 .navLinks {
@@ -32,20 +42,29 @@
 }
 
 .navLinks li:hover {
-  background-color: var(--secondary-color);
+  background-color: var(--col9);
 }
 
 .navLinks a {
   margin: 0px;
-  color: var(--head-text-color);
+  color: var(--col3);
   text-decoration: none;
 }
 
 .loginBtn {
-  background-color: var(--secondary-color);
+  background-color: var(--col9);
   border: none;
   font-family: "Roboto mono";
-  color: var(--head-text-color);
+  color: var(--col3);
   padding: 10px 15px;
   cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 10%;
+  }
 }
