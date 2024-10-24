@@ -28,9 +28,10 @@ jobs:
         run: |
           git config --global user.name "szorawar2"
           git config --global user.email "zorawar355@gmail.com"
-          git checkout -b build || git checkout build
+          git fetch origin  # Ensure remote branches are up-to-date
+          git checkout build  # Create or switch to the build branch
           git rm -rf .  # Clean up old files
-          cp -r build/* .  # Copy new build files
+          cp -r dist/* .  # Copy new build files
           git add .
           git commit -m "Deploy build from develop"
           git push --force origin build
