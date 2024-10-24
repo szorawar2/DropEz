@@ -22,5 +22,5 @@ jobs:
           git checkout build  # Create or switch to the build branch
           git rm -rf .  # Clean up old files
           git add .
-          git commit -m "Deploy build from develop"
+          git commit -m "Clear build branch"
           git push --force origin build
