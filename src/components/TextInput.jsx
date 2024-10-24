@@ -49,7 +49,6 @@ function TextInput() {
           console.error(error);
         }
 
-        var fileToSend = fileInputRef.current.files[0];
         const formData = new FormData();
         formData.append("file", fileInputRef.current.files[0]);
 
