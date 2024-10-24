@@ -34,6 +34,6 @@ jobs:
           git checkout -b build  # Create or switch to the build branch
           git rm -rf .  # Clean up old files
           cp -r dist/* .  # Copy new build files
-          git add .
+          git add assets/ *.html *.ico
           git commit -m "Deploy build from develop"
           git push --force origin build
