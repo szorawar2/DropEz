@@ -1,1 +1,1 @@
-Not yet up and running
+Early release @ https://dezit.site/
