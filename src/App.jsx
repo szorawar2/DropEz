@@ -17,7 +17,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { Context } from "./Context";
 
 function App() {
-  const { token, setToken, login, setLogin } = useContext(Context);
+  const { setToken } = useContext(Context);
   const navigate = useNavigate();
 
   // const [isLoading, setIsLoading] = useState(false); // To show a loading state
